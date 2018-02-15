@@ -1,4 +1,4 @@
-package edu.oregonstate.mist.positions.core
+package edu.oregonstate.mist.hr.core
 
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 

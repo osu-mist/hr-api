@@ -1,36 +1,36 @@
 package edu.oregonstate.mist.api
 
-import edu.oregonstate.mist.positions.db.PositionMockDAO
+import edu.oregonstate.mist.hr.db.HRMockDAO
 import org.junit.Test
 
 import static org.junit.Assert.*
 
-class PositionMockDAOTest {
+class HRMockDAOTest {
     @Test
     void shouldReturnEmptyPositionList() {
-        assert !new PositionMockDAO(10).generate(0, null)
+        assert !new HRMockDAO(10).generate(0, null)
     }
 
     @Test
     void shouldGenerateManyPositions() {
         (1..10).each {
-            assertEquals(new PositionMockDAO(10).generate(it, null).size(), it * 2)
+            assertEquals(new HRMockDAO(10).generate(it, null).size(), it * 2)
         }
     }
 
     @Test
     void shouldNotGenerateNegativePositions() {
         (-10..-1).each {
-            assertEquals(new PositionMockDAO(10).generate(it, null).size(), 0)
+            assertEquals(new HRMockDAO(10).generate(it, null).size(), 0)
         }
     }
 
     @Test
     void shouldReturnPositionsSpecifiedInConstructor() {
-        PositionMockDAO positionMockDAO
+        HRMockDAO hrMockDAO
         (1..10).each {
-            positionMockDAO = new PositionMockDAO(it)
-            def positions = positionMockDAO.getPositions("abc")
+            hrMockDAO = new HRMockDAO(it)
+            def positions = hrMockDAO.getPositions("abc")
             assertEquals(positions.size(), it * 2)
             positions.each { assertEquals(it.businessCenter, "abc")}
         }
@@ -38,16 +38,16 @@ class PositionMockDAOTest {
 
     @Test
     void shouldReturnEmptyListForEmpty() {
-        PositionMockDAO positionMockDAO
+        HRMockDAO hrMockDAO
         (1..10).each {
-            positionMockDAO = new PositionMockDAO(it)
-            assertTrue(positionMockDAO.getPositions("empty").isEmpty())
+            hrMockDAO = new HRMockDAO(it)
+            assertTrue(hrMockDAO.getPositions("empty").isEmpty())
         }
     }
 
     @Test
     void shouldGenerateOrganizationCodesInLimitedRange() {
-        new PositionMockDAO(10).generate(100, null).each {
+        new HRMockDAO(10).generate(100, null).each {
             def difference = Math.abs(Integer.valueOf(it.organizationCode) - 1111)
             assertTrue(difference <= 100)
         }
@@ -61,7 +61,7 @@ class PositionMockDAOTest {
     }
 
     void checkPositionNumbersUniqueInBC(String businessCenter) {
-        def positions = new PositionMockDAO(10).generate(2000, businessCenter)
+        def positions = new HRMockDAO(10).generate(2000, businessCenter)
 
         def positionNumbers =  positions.positionNumber
         def uniquePositionNumbers = positionNumbers.unique()
@@ -71,7 +71,7 @@ class PositionMockDAOTest {
 
     @Test
     void invalidBcIsInvalid() {
-        def mockDAO = new PositionMockDAO(1)
+        def mockDAO = new HRMockDAO(1)
         assertFalse mockDAO.isValidBC("invalid-bc")
     }
 }

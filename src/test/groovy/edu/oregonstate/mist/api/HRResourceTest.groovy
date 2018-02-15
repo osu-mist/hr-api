@@ -2,9 +2,9 @@ package edu.oregonstate.mist.api
 
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
-import edu.oregonstate.mist.positions.db.PosDAO
-import edu.oregonstate.mist.positions.db.PositionMockDAO
-import edu.oregonstate.mist.positions.resources.PositionsResource
+import edu.oregonstate.mist.hr.db.BaseHRDAO
+import edu.oregonstate.mist.hr.db.HRMockDAO
+import edu.oregonstate.mist.hr.resources.HRResource
 import org.junit.Before
 import org.junit.Test
 
@@ -13,9 +13,9 @@ import javax.ws.rs.core.Response
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNotNull
 
-class PositionsResourceTest {
+class HRResourceTest {
     public static final int DATA_SIZE = 10
-    PositionsResource positionsResource
+    HRResource positionsResource
 
     @Test
     void shouldRequireTypeAndOnlySupportStudents() {
@@ -61,8 +61,8 @@ class PositionsResourceTest {
 
     @Before
     void setup() {
-        PosDAO posDAO = new PositionMockDAO(DATA_SIZE)
-        positionsResource = new PositionsResource(posDAO)
+        BaseHRDAO posDAO = new HRMockDAO(DATA_SIZE)
+        positionsResource = new HRResource(posDAO)
     }
 
     @Test

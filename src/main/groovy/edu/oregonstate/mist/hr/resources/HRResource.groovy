@@ -1,9 +1,9 @@
-package edu.oregonstate.mist.positions.resources
+package edu.oregonstate.mist.hr.resources
 
 import com.codahale.metrics.annotation.Timed
 import edu.oregonstate.mist.api.Resource
 import edu.oregonstate.mist.api.jsonapi.ResultObject
-import edu.oregonstate.mist.positions.db.PositionDAO
+import edu.oregonstate.mist.hr.db.HRDAO
 import groovy.transform.TypeChecked
 
 import javax.annotation.security.PermitAll
@@ -18,11 +18,11 @@ import javax.ws.rs.core.Response
 @Produces(MediaType.APPLICATION_JSON)
 @PermitAll
 @TypeChecked
-class PositionsResource extends Resource {
-    private PositionDAO positionDAO
+class HRResource extends Resource {
+    private HRDAO hrDAO
 
-    PositionsResource(PositionDAO positionDAO) {
-        this.positionDAO = positionDAO
+    HRResource(HRDAO hrDAO) {
+        this.hrDAO = hrDAO
     }
 
     @Timed
@@ -33,7 +33,7 @@ class PositionsResource extends Resource {
             return badRequest("businessCenter (query parameter) is required.").build()
         }
 
-        if (!positionDAO.isValidBC(businessCenter)) {
+        if (!hrDAO.isValidBC(businessCenter)) {
             return badRequest("The value of businessCenter (query parameter) is invalid.").build()
         }
 
@@ -43,7 +43,7 @@ class PositionsResource extends Resource {
         }
 
         ok(new ResultObject(
-                data: positionDAO.getPositions(businessCenter).collect { it.toResourceObject() }
+                data: hrDAO.getPositions(businessCenter).collect { it.toResourceObject() }
         )).build()
     }
 

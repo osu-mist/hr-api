@@ -1,15 +1,15 @@
-package edu.oregonstate.mist.positions.db
+package edu.oregonstate.mist.hr.db
 
-import edu.oregonstate.mist.positions.core.Position
+import edu.oregonstate.mist.hr.core.Position
 
-class PositionMockDAO extends PosDAO implements PositionDAO {
+class HRMockDAO extends BaseHRDAO implements HRDAO {
     private static List<String> titles = ["Office Manager", "Retail Food Service",
                                           "Mock Dept", "Science Lab"]
     public int positionSize = 0
 
     private List<String> takenPositions = new ArrayList<>()
 
-    PositionMockDAO(int positionSize) {
+    HRMockDAO(int positionSize) {
         this.positionSize = positionSize
     }
 
