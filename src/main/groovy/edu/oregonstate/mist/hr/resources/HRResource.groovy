@@ -14,7 +14,7 @@ import javax.ws.rs.QueryParam
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
-@Path("positions")
+@Path("hr")
 @Produces(MediaType.APPLICATION_JSON)
 @PermitAll
 @TypeChecked
@@ -27,6 +27,7 @@ class HRResource extends Resource {
 
     @Timed
     @GET
+    @Path("positions")
     Response getPositions(@QueryParam('businessCenter') String businessCenter,
                           @QueryParam('type') String type) {
         if (!businessCenter?.trim()) {
@@ -44,6 +45,19 @@ class HRResource extends Resource {
 
         ok(new ResultObject(
                 data: hrDAO.getPositions(businessCenter).collect { it.toResourceObject() }
+        )).build()
+    }
+
+    @Timed
+    @GET
+    @Path("departments")
+    Response getDepartments(@QueryParam('businessCenter') String businessCenter) {
+        if (!businessCenter?.trim() || !hrDAO.isValidBC(businessCenter)) {
+            return badRequest("A valid businessCenter is required.").build()
+        }
+
+        ok(new ResultObject(
+                data: hrDAO.getDepartments(businessCenter).collect { it.toResourceObject() }
         )).build()
     }
 
