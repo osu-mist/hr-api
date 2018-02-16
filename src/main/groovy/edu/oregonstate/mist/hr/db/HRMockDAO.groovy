@@ -1,28 +1,35 @@
 package edu.oregonstate.mist.hr.db
 
+import edu.oregonstate.mist.hr.core.Department
 import edu.oregonstate.mist.hr.core.Position
 
 class HRMockDAO extends BaseHRDAO implements HRDAO {
     private static List<String> titles = ["Office Manager", "Retail Food Service",
-                                          "Mock Dept", "Science Lab"]
-    public int positionSize = 0
+                                          "Mock Position", "Science Lab Worker"]
 
     private List<String> takenPositions = new ArrayList<>()
 
-    HRMockDAO(int positionSize) {
-        this.positionSize = positionSize
+    private static List<String> businessCenters = ["UABC", "AABC", "FOBC"]
+
+    private static List<String> departments = ["HR Sample", "Finance Dept",
+                                               "Mock Dept", "Audits"]
+    // Number of positions/departments to return
+    public int size = 0
+
+    HRMockDAO(int size) {
+        this.size = size
     }
 
     @Override
     List<Position> getPositions(String businessCenter) {
         if (businessCenter == "empty") {
-            return generate(0, null)
+            return generatePositions(0, null)
         }
 
-        generate(positionSize, businessCenter)
+        generatePositions(size, businessCenter)
     }
 
-    List<Position> generate(int size, String businessCenter) {
+    List<Position> generatePositions(int size, String businessCenter) {
         List<Position> result = new ArrayList<>()
         if (size) {
             size.times {
@@ -50,7 +57,7 @@ class HRMockDAO extends BaseHRDAO implements HRDAO {
     private String getPositionNumber(Random random) {
         String candidateNumber = ""
         while(candidateNumber == "" || takenPositions.contains(candidateNumber)) {
-            candidateNumber = random.nextInt( 999999).toString()
+            candidateNumber = random.nextInt(999999).toString()
         }
 
         takenPositions += candidateNumber
@@ -61,6 +68,40 @@ class HRMockDAO extends BaseHRDAO implements HRDAO {
         def random = new Random()
         titles[random.nextInt(titles.size())] + " " +
                 random.nextInt(111)
+    }
+
+    static List<Department> generateDepartments(int size, String businessCenter) {
+        List<Department> result = new ArrayList<>()
+
+        if (size) {
+            size.times {
+                result += new Department(
+                        name: chooseName(),
+                        businessCenter: businessCenter ?: chooseBusinessCenter(),
+                        organizationCode: 1111 + it
+                )
+            }
+        }
+        result
+    }
+
+    private static String chooseBusinessCenter() {
+        def random = new Random()
+        businessCenters[random.nextInt(businessCenters.size())]
+    }
+
+    private static String chooseName() {
+        def random = new Random()
+        departments[random.nextInt(departments.size())] + " " +
+                random.nextInt(111)
+    }
+
+    List<Department> getDepartments(String businessCenter) {
+        if (businessCenter == "empty") {
+            return generateDepartments(0, null)
+        }
+
+        generateDepartments(size, businessCenter)
     }
 
     boolean isValidBC(String businessCenter) {

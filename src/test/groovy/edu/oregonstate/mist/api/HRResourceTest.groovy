@@ -15,18 +15,18 @@ import static org.junit.Assert.assertNotNull
 
 class HRResourceTest {
     public static final int DATA_SIZE = 10
-    HRResource positionsResource
+    HRResource hrResource
 
     @Test
     void shouldRequireTypeAndOnlySupportStudents() {
-        Response response = positionsResource.getPositions("", null)
+        Response response = hrResource.getPositions("", null)
         assertNotNull(response)
         assertEquals(response.status, 400)
         assertEquals(response.getEntity().class, Error.class)
     }
     @Test
     void shouldListAllPositions() {
-        Response response = positionsResource.getPositions("bcName", "student")
+        Response response = hrResource.getPositions("bcName", "student")
         assertNotNull(response)
         assertEquals(response.getEntity().class, ResultObject.class)
         assertEquals(response.status, 200)
@@ -43,7 +43,7 @@ class HRResourceTest {
 
     @Test
     void shouldReturn400ForEmptyList() {
-        Response response = positionsResource.getPositions("empty", "student")
+        Response response = hrResource.getPositions("empty", "student")
         assertNotNull(response)
         assertEquals(response.getEntity().class, Error.class)
         assertEquals(response.status, 400)
@@ -51,7 +51,7 @@ class HRResourceTest {
 
     @Test
     void shouldRequireBusinessCenter() {
-        Response response = positionsResource.getPositions("", "student")
+        Response response = hrResource.getPositions("", "student")
         assertNotNull(response)
         assertEquals(response.status, 400)
         assertEquals(response.getEntity().class, Error.class)
@@ -61,13 +61,13 @@ class HRResourceTest {
 
     @Before
     void setup() {
-        BaseHRDAO posDAO = new HRMockDAO(DATA_SIZE)
-        positionsResource = new HRResource(posDAO)
+        BaseHRDAO hrDAO = new HRMockDAO(DATA_SIZE)
+        hrResource = new HRResource(hrDAO)
     }
 
     @Test
     void shouldValidateBusinessCenter() {
-        Response response = positionsResource.getPositions("invalid-bc", "student")
+        Response response = hrResource.getPositions("invalid-bc", "student")
         assertNotNull(response)
         assertEquals(response.status, 400)
         assertEquals(response.getEntity().class, Error.class)
@@ -77,7 +77,7 @@ class HRResourceTest {
 
     @Test
     void shouldOnlyAcceptStudent() {
-        Response response = positionsResource.getPositions("bcName", "faculty")
+        Response response = hrResource.getPositions("bcName", "faculty")
         assertNotNull(response)
         assertEquals(response.status, 400)
         assertEquals(response.getEntity().class, Error.class)
