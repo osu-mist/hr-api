@@ -30,12 +30,10 @@ class HRResource extends Resource {
     @Path("positions")
     Response getPositions(@QueryParam('businessCenter') String businessCenter,
                           @QueryParam('type') String type) {
-        if (!businessCenter?.trim()) {
-            return badRequest("businessCenter (query parameter) is required.").build()
-        }
+        Response businessCenterError = checkBusinessCenter(businessCenter)
 
-        if (!hrDAO.isValidBC(businessCenter)) {
-            return badRequest("The value of businessCenter (query parameter) is invalid.").build()
+        if (businessCenterError) {
+            return businessCenterError
         }
 
         if (!type?.trim() || !type.equalsIgnoreCase("student")) {
@@ -52,8 +50,10 @@ class HRResource extends Resource {
     @GET
     @Path("departments")
     Response getDepartments(@QueryParam('businessCenter') String businessCenter) {
-        if (!businessCenter?.trim() || !hrDAO.isValidBC(businessCenter)) {
-            return badRequest("A valid businessCenter is required.").build()
+        Response businessCenterError = checkBusinessCenter(businessCenter)
+
+        if (businessCenterError) {
+            return businessCenterError
         }
 
         ok(new ResultObject(
@@ -61,4 +61,13 @@ class HRResource extends Resource {
         )).build()
     }
 
+    private Response checkBusinessCenter(String businessCenter) {
+        if (!businessCenter?.trim()) {
+            return badRequest("businessCenter (query parameter) is required.").build()
+        } else if (!hrDAO.isValidBC(businessCenter)) {
+            return badRequest("The value of businessCenter (query parameter) is invalid.").build()
+        } else {
+            return null
+        }
+    }
 }
