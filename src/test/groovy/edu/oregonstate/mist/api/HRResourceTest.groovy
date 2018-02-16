@@ -42,7 +42,7 @@ class HRResourceTest {
     }
 
     @Test
-    void shouldReturn400ForEmptyList() {
+    void shouldReturn400ForEmptyListPositions() {
         Response response = hrResource.getPositions("empty", "student")
         assertNotNull(response)
         assertEquals(response.getEntity().class, Error.class)
@@ -50,7 +50,7 @@ class HRResourceTest {
     }
 
     @Test
-    void shouldRequireBusinessCenter() {
+    void shouldRequireBusinessCenterPositions() {
         Response response = hrResource.getPositions("", "student")
         assertNotNull(response)
         assertEquals(response.status, 400)
@@ -66,7 +66,7 @@ class HRResourceTest {
     }
 
     @Test
-    void shouldValidateBusinessCenter() {
+    void shouldValidateBusinessCenterPositions() {
         Response response = hrResource.getPositions("invalid-bc", "student")
         assertNotNull(response)
         assertEquals(response.status, 400)
@@ -84,5 +84,46 @@ class HRResourceTest {
         assertEquals(response.getEntity()["developerMessage"],
                 "type (query parameter) is required. " +
                         "'student' is currently the only supported type.")
+    }
+
+    @Test
+    void shouldListAllDepartments() {
+        Response response = hrResource.getDepartments("bcName")
+        assertNotNull(response)
+        assertEquals(response.getEntity().class, ResultObject.class)
+        assertEquals(response.status, 200)
+
+        ResultObject resultObject = response.getEntity()
+        assertNotNull(resultObject.data)
+        assertEquals(resultObject.data.class, ArrayList.class)
+        assertEquals(resultObject.data.size(), DATA_SIZE)
+
+        resultObject.data.each {
+            assertEquals(it.class, ResourceObject.class)
+        }
+    }
+
+    @Test
+    void shouldReturn400ForEmptyListDepartments() {
+        Response response = hrResource.getDepartments("empty")
+        assertNotNull(response)
+        assertEquals(response.getEntity().class, Error.class)
+        assertEquals(response.status, 400)
+    }
+
+    @Test
+    void shouldRequireBusinessCenterDepartments() {
+        Response response = hrResource.getDepartments("")
+        assertNotNull(response)
+        assertEquals(response.status, 400)
+        assertEquals(response.getEntity().class, Error.class)
+    }
+
+    @Test
+    void shouldValidateBusinessCenterDepartments() {
+        Response response = hrResource.getDepartments("invalid-bc")
+        assertNotNull(response)
+        assertEquals(response.status, 400)
+        assertEquals(response.getEntity().class, Error.class)
     }
 }
