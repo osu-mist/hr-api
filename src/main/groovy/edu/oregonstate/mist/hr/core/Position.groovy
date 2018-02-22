@@ -4,9 +4,12 @@ import edu.oregonstate.mist.api.jsonapi.ResourceObject
 
 class Position {
     String title
+    String positionClass
     String businessCenter
     String positionNumber
     String organizationCode
+    String nationalOccupationCode
+    String nationalOccupationCodeDescription
 
     BigDecimal lowSalaryPoint
     BigDecimal highSalaryPoint
@@ -17,9 +20,12 @@ class Position {
                 id: positionNumber,
                 attributes: [
                         title: title,
+                        class: positionClass,
                         businessCenter: businessCenter,
                         positionNumber: positionNumber,
                         organizationCode: organizationCode,
+                        nationalOccupationCode: nationalOccupationCode,
+                        nationalOccupationCodeDescription: nationalOccupationCodeDescription,
                         lowSalaryPoint: lowSalaryPoint,
                         highSalaryPoint: highSalaryPoint
                 ]

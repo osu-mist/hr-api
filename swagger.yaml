@@ -110,7 +110,10 @@ definitions:
               properties:
                 title:
                   type: string
-                  description: Position title.
+                  description: Position title
+                class:
+                  type: string
+                  description: Position class
                 businessCenter:
                   type: string
                   description: Name of the business center
@@ -131,6 +134,15 @@ definitions:
                   format: float
                   description: High point for position salary
                   example: 15.25
+                nationalOccupationCode:
+                  type: string
+                  description: Numeric national occupation code
+                  example: "1234"
+                nationalOccupationCodeDescription:
+                  type: string
+                  description: Description of nationalOccupationCode
+                  example: "Colleges/Schools Professionals"
+
   DepartmentsResultObject:
     properties:
       data:
