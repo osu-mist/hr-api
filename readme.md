@@ -1,6 +1,9 @@
-# Positions API
+# HR API
 
-List position title and position number tied to a department and business center
+Get human resources related data for positions and departments.
+
+This repository combines the original [departments](https://github.com/osu-mist/departments-api)
+and [positions](https://github.com/osu-mist/positions-api) APIs. Those repositories are now archived.
 
 ### Generate Keys
 

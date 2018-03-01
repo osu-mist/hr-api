@@ -1,24 +1,21 @@
-package edu.oregonstate.mist.positions.core
+package edu.oregonstate.mist.hr.core
 
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 
-class Position {
-    String title
+class Department {
+    String name
     String businessCenter
-    String positionNumber
     String organizationCode
 
     ResourceObject toResourceObject() {
         new ResourceObject(
-                type: "position",
-                id: positionNumber,
+                type: "department",
+                id: organizationCode,
                 attributes: [
-                        title: title,
+                        name: name,
                         businessCenter: businessCenter,
-                        positionNumber: positionNumber,
                         organizationCode: organizationCode
                 ]
         )
     }
-
 }
