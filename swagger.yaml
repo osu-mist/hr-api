@@ -1,18 +1,20 @@
 swagger: '2.0'
 info:
-  title: Positions API
-  description: API to retrieve the position title and numbers tied to a department and business center.
+  title: HR API
+  description: |
+    API to retrieve the departments, position titles, and ID's tied to a department and business center.
   version: '1.0'
   license:
     name: GNU Affero General Public License Version 3
     url: http://www.gnu.org/licenses/agpl-3.0.en.html
 externalDocs:
   description: GitHub Repository
-  url: https://github.com/osu-mist/positions-api
+  url: https://github.com/osu-mist/hr-api
 schemes:
   - https
 produces:
   - application/json
+basePath: /v1/hr
 paths:
   /positions:
     get:
@@ -20,21 +22,37 @@ paths:
       description: List position (job) titles and numbers in a single business center and department.
       parameters:
         - in: query
-          name: businessCenter
-          description: "4-character business center name"
-          required: true
-          type: string
-        - in: query
           name: type
           description: The type of positions to list. Currently the API only supports "student" positions.
           required: true
           type: string
+        - $ref: '#/parameters/businessCenter'
         - $ref: '#/parameters/pretty'
       responses:
         200:
           description: List of positions
           schema:
-            $ref: "#/definitions/ResultObject"
+            $ref: "#/definitions/PositionsResultObject"
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+  /departments:
+    get:
+      summary: List departments
+      description: Return org code and org description (departments) for a single business center
+      parameters:
+        - $ref: '#/parameters/businessCenter'
+        - $ref: '#/parameters/pretty'
+      responses:
+        200:
+          description: List of departments
+          schema:
+            $ref: "#/definitions/DepartmentsResultObject"
         400:
           description: Bad request
           schema:
@@ -51,6 +69,12 @@ parameters:
     type: boolean
     required: false
     description: If true, JSON response will be pretty-printed
+  businessCenter:
+    name: businessCenter
+    in: query
+    description: "4-character business center name"
+    required: true
+    type: string
 
 definitions:
   Error:
@@ -70,67 +94,76 @@ definitions:
       details:
         type: string
         description: A link to further information about the error.
-
-  ResultObject:
+  PositionsResultObject:
     properties:
-      links:
-        $ref: "#/definitions/Links"
       data:
         type: array
         items:
-          $ref: "#/definitions/ResourceObject"
+          properties:
+            id:
+              type: string
+              example: "C12345"
+            type:
+              type: string
+              example: position
+            attributes:
+              properties:
+                title:
+                  type: string
+                  description: Position title
+                class:
+                  type: string
+                  description: Position class
+                businessCenter:
+                  type: string
+                  description: Name of the business center
+                positionNumber:
+                  type: string
+                  description: Position number
+                  example: "C12345"
+                organizationCode:
+                  type: string
+                  description: Numeric orgCode for the department
+                lowSalaryPoint:
+                  type: number
+                  format: float
+                  description: Low point for position salary
+                  example: 10.5
+                highSalaryPoint:
+                  type: number
+                  format: float
+                  description: High point for position salary
+                  example: 15.25
+                nationalOccupationCode:
+                  type: string
+                  description: Numeric national occupation code
+                  example: "1234"
+                nationalOccupationCodeDescription:
+                  type: string
+                  description: Description of nationalOccupationCode
+                  example: "Colleges/Schools Professionals"
 
-  ResourceObject:
+  DepartmentsResultObject:
     properties:
-      id:
-        type: string
-      type:
-        type: string
-      attributes:
-        $ref: "#/definitions/Attributes"
-      links:
-        $ref: "#/definitions/SelfLink"
-
-  Links:
-    properties:
-      self:
-        type: string
-      first:
-        type: string
-      last:
-        type: string
-      prev:
-        type: string
-      next:
-        type: string
-
-  SelfLink:
-    properties:
-      self:
-        type: string
-        description: Url to this resource / location.
-
-  Attributes:
-    properties:
-      title:
-        type: string
-        description: Position title.
-      businessCenter:
-        type: string
-        description: Name of the business center
-      positionNumber:
-        type: string
-        description: Position number
-      organizationCode:
-        type: string
-        description: Numeric orgCode for the department
-      lowSalaryPoint:
-        type: number
-        format: float
-        description: Low point for position salary
-        example: 10.5
-      highSalaryPoint:
-        type: number
-        format: float
-        description: High point for position salary
-        example: 15.25
+      data:
+        type: array
+        items:
+          properties:
+            id:
+              type: string
+              example: "123456"
+            type:
+              type: string
+              example: department
+            attributes:
+              properties:
+                name:
+                  type: string
+                  description: Name of the department usually referred to as orgDescription.
+                businessCenter:
+                  type: string
+                  description: Name of the business center
+                organizationCode:
+                  type: string
+                  example: "123456"
+                  description: Numeric orgCode for the department

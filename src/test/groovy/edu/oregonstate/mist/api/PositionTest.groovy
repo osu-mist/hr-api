@@ -1,7 +1,7 @@
 package edu.oregonstate.mist.api
 
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
-import edu.oregonstate.mist.positions.core.Position
+import edu.oregonstate.mist.hr.core.Position
 import org.junit.Test
 
 import static org.junit.Assert.assertEquals
