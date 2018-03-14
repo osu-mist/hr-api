@@ -61,6 +61,37 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/Error'
+  /locations:
+    get:
+      summary: List locations
+      description: Return a list of HR locations that can be related to a job record, including minimum wages if applicable.
+      parameters:
+        - in: query
+          name: date
+          description: "Date to search by for minimum wage data. Minimum wage depends on the date. Example: '2018-12-31'"
+          required: false
+          type: string
+          format: date
+          default: The current date
+        - in: query
+          name: state
+          description: "Filter by state code. Use ANSI standard INCITS 38:2009 for state codes."
+          required: false
+          type: string
+        - $ref: '#/parameters/pretty'
+      responses:
+        200:
+          description: List of locations
+          schema:
+            $ref: "#/definitions/LocationsResultObject"
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error' 
 
 parameters:
   pretty:
@@ -167,3 +198,48 @@ definitions:
                   type: string
                   example: "123456"
                   description: Numeric orgCode for the department
+  LocationsResultObject:
+    properties:
+      data:
+        type: array
+        items:
+          properties:
+            id:
+              type: string
+              example: "40"
+            type:
+              type: string
+              example: location
+            attributes:
+              properties:
+                name:
+                  type: string
+                city:
+                  type: string
+                  example: Corvallis
+                county:
+                  type: string
+                  example: Benton County
+                state:
+                  type: string
+                  example: Oregon
+                stateCode:
+                  type: string
+                  description: "State code/abbreviation which follows ANSI standard INCITS 38:2009"
+                  example: OR
+                minimumWageClassification:
+                  type: string
+                  description: Classification of location related to minimum wage. This classification affects the value of minimum wage for a given date.
+                  enum:
+                    - Standard
+                    - Nonurban
+                    - Urban
+                  example: Standard
+                minimumWage:
+                  type: number
+                  format: float
+                  description: |
+                    Minimum wage for location.
+                    Currently, minimum wage is only available for Oregon locations.
+                    This value can be affected by the date query parameter.
+                  example: 10.25
