@@ -16,5 +16,4 @@ class DepartmentMapper implements ResultSetMapper<Department> {
                 organizationCode: rs.getString(AbstractHRDAO.mapperColumnOrganizationCode)
         )
     }
-
 }

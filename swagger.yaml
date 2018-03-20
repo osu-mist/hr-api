@@ -243,3 +243,7 @@ definitions:
                     Currently, minimum wage is only available for Oregon locations.
                     This value can be affected by the date query parameter.
                   example: 10.25
+                minimumWageDate:
+                  type: string
+                  format: date
+                  description: Date used to determine minimum wage.
