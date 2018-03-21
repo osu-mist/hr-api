@@ -1,5 +1,6 @@
-package edu.oregonstate.mist.api
+package edu.oregonstate.mist.api.hr
 
+import edu.oregonstate.mist.api.Error
 import edu.oregonstate.mist.api.jsonapi.ResourceObject
 import edu.oregonstate.mist.api.jsonapi.ResultObject
 import edu.oregonstate.mist.hr.db.BaseHRDAO

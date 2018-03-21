@@ -1,4 +1,4 @@
-package edu.oregonstate.mist.api
+package edu.oregonstate.mist.api.hr
 
 import edu.oregonstate.mist.hr.core.Location
 import org.junit.Test
