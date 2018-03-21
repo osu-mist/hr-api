@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull
 
 class HRResourceTest {
     public static final int DATA_SIZE = 10
+    private final URI endpointUri = new URI("https://www.foo.com/")
     HRResource hrResource
 
     @Test
@@ -62,7 +63,7 @@ class HRResourceTest {
     @Before
     void setup() {
         BaseHRDAO hrDAO = new HRMockDAO(DATA_SIZE)
-        hrResource = new HRResource(hrDAO)
+        hrResource = new HRResource(hrDAO, endpointUri)
     }
 
     @Test

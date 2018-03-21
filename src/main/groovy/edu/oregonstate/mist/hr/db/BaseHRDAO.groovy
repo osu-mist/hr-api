@@ -16,4 +16,8 @@ abstract class BaseHRDAO {
     List<Location> getLocations(String state) {
         new ArrayList<Location>()
     }
+
+    Location getLocationById(String id) {
+        new Location()
+    }
 }

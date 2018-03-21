@@ -23,7 +23,7 @@ class HRApplication extends Application<HRConfiguration> {
         this.setup(configuration, environment)
         HRDAO hrDAO = getHRDAO(configuration, environment)
 
-        environment.jersey().register(new HRResource(hrDAO))
+        environment.jersey().register(new HRResource(hrDAO, configuration.api.endpointUri))
         // @todo: register healthcheck
     }
 

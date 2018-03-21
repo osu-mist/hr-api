@@ -11,6 +11,7 @@ class LocationMapper implements ResultSetMapper<Location> {
     private final String oregon = "Oregon"
     private final String oregonStateCode = "OR"
 
+    // Maps data source location classifications to plain english values.
     private final Map minWageMap = [
             "MWS": Location.standardMinWageClass,
             "MWP": Location.urbanMinWageClass,
@@ -63,10 +64,20 @@ class LocationMapper implements ResultSetMapper<Location> {
         city
     }
 
+    /**
+     * Simple helper method to check location is Oregon.
+     * @param stateCode
+     * @return
+     */
     private Boolean isOregon(String stateCode) {
         stateCode == oregonStateCode
     }
 
+    /**
+     * Helper method to return location name if the code is not null from the data source.
+     * @param locationCode
+     * @return
+     */
     private String mapMinimumWageClassification(String locationCode) {
         if (locationCode) {
            return minWageMap[locationCode]
