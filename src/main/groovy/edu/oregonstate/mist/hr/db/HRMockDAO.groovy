@@ -1,6 +1,7 @@
 package edu.oregonstate.mist.hr.db
 
 import edu.oregonstate.mist.hr.core.Department
+import edu.oregonstate.mist.hr.core.Location
 import edu.oregonstate.mist.hr.core.Position
 
 class HRMockDAO extends BaseHRDAO implements HRDAO {
@@ -13,6 +14,19 @@ class HRMockDAO extends BaseHRDAO implements HRDAO {
 
     private static List<String> departments = ["HR Sample", "Finance Dept",
                                                "Mock Dept", "Audits"]
+
+    private static HashMap<String, Location> locations = [
+            "1": new Location(id: "1", name: "Corvallis", city: "Corvallis",
+                    county: "Benton County", state: "Oregon", stateCode: "OR",
+                    minimumWageClassification: Location.standardMinWageClass),
+            "2A": new Location(id: "2A", name: "Alsea", city: "Alsea", county: "Benton County",
+                    state: "Oregon", stateCode: "OR",
+                    minimumWageClassification: Location.nonUrbanMinWageClass),
+            "55": new Location(id: "55", name: "Portland Area", city: "Portland",
+                    county: "Washington County", state: "Oregon", stateCode: "OR",
+                    minimumWageClassification: Location.urbanMinWageClass)
+    ]
+
     // Number of positions/departments to return
     public int size = 0
 
@@ -107,6 +121,14 @@ class HRMockDAO extends BaseHRDAO implements HRDAO {
     boolean isValidBC(String businessCenter) {
         def invalidBusinessCenters = ["empty", "invalid-bc"]
         !invalidBusinessCenters.contains(businessCenter)
+    }
+
+    List<Location> getLocations(String state) {
+        locations.collect { id, location -> location}
+    }
+
+    Location getLocationById(String id) {
+        locations[id]
     }
 
     @Override
