@@ -9,6 +9,9 @@ import org.junit.Before
 import org.junit.Test
 
 import javax.ws.rs.core.Response
+import javax.ws.rs.core.UriBuilder
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNotNull
@@ -126,5 +129,74 @@ class HRResourceTest {
         assertNotNull(response)
         assertEquals(response.status, 400)
         assertEquals(response.getEntity().class, Error.class)
+    }
+
+    @Test
+    void getLocationsShouldRejectBadDate() {
+        rejectBadDates(hrResource.getLocations("31-12-2019", null))
+    }
+
+    @Test
+    void getLocationByIdShouldRejectBadDate() {
+        rejectBadDates(hrResource.getLocationById(null, "31-12-2019"))
+    }
+
+    private void rejectBadDates(Response response) {
+        assertNotNull(response)
+        assertEquals(response.status, 400)
+        assertEquals(response.getEntity().class, Error.class)
+
+        Error error = response.getEntity()
+
+        assertEquals(error.developerMessage, "Invalid date. Date must follow a full-date " +
+                "per ISO 8601. Example: 2017-12-31")
+    }
+
+    @Test
+    void getLocationsShouldAcceptGoodDate() {
+        String goodISO8601Date = "2017-12-31"
+        Response locationsResponse = hrResource.getLocations(goodISO8601Date, null)
+
+        assertNotNull(locationsResponse.entity)
+        assertEquals(locationsResponse.status, 200)
+
+        ResourceObject sampleLocation = locationsResponse.entity.data[0]
+
+        Response locationResponse = hrResource.getLocationById(sampleLocation.id, goodISO8601Date)
+
+        assertNotNull(locationResponse.entity)
+        assertEquals(locationResponse.status, 200)
+    }
+
+    @Test
+    void getLocationByIdShouldReturn404() {
+        String badID = "fooBar"
+        Response response = hrResource.getLocationById(badID, null)
+
+        assertEquals(response.status, 404)
+    }
+
+    @Test
+    void testSelfLink() {
+        String date = "2015-09-20"
+        Response response = hrResource.getLocations(date, null)
+
+        assertEquals(date, parseDateFromSelfLink(response))
+    }
+
+    @Test
+    void defaultDateShouldBeCurrentDate() {
+        Response response = hrResource.getLocations(null, null)
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+
+        assertEquals(currentDate, parseDateFromSelfLink(response))
+    }
+
+    String parseDateFromSelfLink(Response response) {
+        ResourceObject sampleLocation = response.getEntity().data[0]
+        String selfLink = sampleLocation.links["self"]
+        URI selfLinkUri = UriBuilder.fromUri(selfLink).build()
+
+        selfLinkUri.getQuery().split("=")[1]
     }
 }
