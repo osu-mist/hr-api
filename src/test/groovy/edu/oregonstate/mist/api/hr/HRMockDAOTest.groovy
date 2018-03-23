@@ -1,5 +1,6 @@
-package edu.oregonstate.mist.api
+package edu.oregonstate.mist.api.hr
 
+import edu.oregonstate.mist.hr.core.Location
 import edu.oregonstate.mist.hr.db.HRMockDAO
 import org.junit.Test
 
@@ -128,5 +129,16 @@ class HRMockDAOTest {
     void invalidBcIsInvalid() {
         def mockDAO = new HRMockDAO(1)
         assertFalse mockDAO.isValidBC("invalid-bc")
+    }
+
+    @Test
+    void testLocations() {
+        def mockDAO = new HRMockDAO(1)
+        List<Location> locations = mockDAO.getLocations(null)
+        assertTrue(locations.size() > 1)
+
+        String locationID = locations[0].id
+        Location location = mockDAO.getLocationById(locationID)
+        assertNotNull(location)
     }
 }

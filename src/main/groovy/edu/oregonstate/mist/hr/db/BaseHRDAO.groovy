@@ -1,6 +1,7 @@
 package edu.oregonstate.mist.hr.db
 
 import edu.oregonstate.mist.hr.core.Department
+import edu.oregonstate.mist.hr.core.Location
 import edu.oregonstate.mist.hr.core.Position
 
 abstract class BaseHRDAO {
@@ -10,5 +11,13 @@ abstract class BaseHRDAO {
 
     List<Department> getDepartments(String businessCenter)  {
         new ArrayList<Department>()
+    }
+
+    List<Location> getLocations(String state) {
+        new ArrayList<Location>()
+    }
+
+    Location getLocationById(String id) {
+        new Location()
     }
 }
