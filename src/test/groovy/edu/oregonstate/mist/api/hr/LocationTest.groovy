@@ -8,7 +8,6 @@ import java.time.LocalDate
 import static org.junit.Assert.assertNull
 import static org.junit.Assert.assertNotNull
 
-
 class LocationTest {
 
     /**
