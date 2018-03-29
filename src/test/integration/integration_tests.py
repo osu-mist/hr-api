@@ -3,6 +3,9 @@ import requests
 import argparse
 import json
 import sys
+from datetime import date, datetime
+from urllib import parse
+from random import randint
 
 
 class integration_tests(unittest.TestCase):
@@ -18,11 +21,15 @@ class integration_tests(unittest.TestCase):
         cls.positions_url = base_url + "/positions"
         cls.locations_url = base_url + "/locations"
 
+        # This should be coming from a /businesscenters endpoint
         cls.business_centers = ["AABC", "AMBC", "ASBC", "BEBC",
                                 "CCBO", "FOBC", "HSBC", "UABC"]
 
         # Only student positions are currently supported.
         cls.position_type = "student"
+
+        # Minimal number of locations to count for
+        cls.minimal_location_count = 200
 
         client_id = config_file_json["client_id"]
         client_secret = config_file_json["client_secret"]
@@ -62,7 +69,10 @@ class integration_tests(unittest.TestCase):
             self.assertEqual(request.status_code, 200)
             self.assertLess(request.elapsed.total_seconds(), 1)
 
-            for department in request.json()["data"]:
+            departments = request.json()["data"]
+            self.assertGreaterEqual(len(departments), 1)
+
+            for department in departments:
                 id = department["id"]
                 attributes = department["attributes"]
 
@@ -92,7 +102,10 @@ class integration_tests(unittest.TestCase):
             self.assertEqual(request.status_code, 200)
             self.assertLess(request.elapsed.total_seconds(), 2)
 
-            for position in request.json()["data"]:
+            positions = request.json()["data"]
+            self.assertGreaterEqual(len(positions), 1)
+
+            for position in positions:
                 id = position["id"]
                 attributes = position["attributes"]
 
@@ -124,25 +137,87 @@ class integration_tests(unittest.TestCase):
                          self.business_centers[0],
                          "classified").status_code, 400)
 
-    def __locations_request(self, state, date):
+    def __locations_request(self, state, date=None):
         params = {'state': state, 'date': date}
         return self.__make_request(self.locations_url, params)
 
-    def __location_request(self, location_id, date):
+    def __location_request(self, location_id, date=None):
         params = {'date': date}
         url = "{}/{}".format(self.locations_url, location_id)
         return self.__make_request(url, params)
 
+    @staticmethod
+    def get_date_from_self_link(self_link):
+        self_link_query_params = parse.parse_qs(
+                parse.urlsplit(self_link).query)
+        return self_link_query_params["date"][0]
+
+    @staticmethod
+    def get_random_date():
+        today = datetime.today()
+        today_plus_4_years = datetime(today.year + 4, today.month, today.day)
+        random_datetime = datetime.fromtimestamp(
+                randint(int(today.timestamp()), int(today_plus_4_years
+                        .timestamp())))
+
+        return random_datetime.date()
+
     def test_all_locations(self):
-        request = self.__locations_request(None, None)
+        request = self.__locations_request(None)
 
         self.assertEqual(request.status_code, 200)
         self.assertLess(request.elapsed.total_seconds(), 1)
 
-        for location in request.json()["data"]:
-            self.assertIsNotNone(location["id"])
-            self.assertIsNotNone(location["attributes"]["name"])
+        current_date = date.today().isoformat()
+
+        locations = request.json()["data"]
+        self.assertGreaterEqual(len(locations), self.minimal_location_count)
+
+        for location in locations:
+            id = location["id"]
+            attributes = location["attributes"]
+            self.assertIsNotNone(id)
+            self.assertIsNotNone(attributes["name"])
             self.assertEqual(location["type"], "Location")
+
+            if attributes["state"] == "Oregon":
+                # Minimum wage data only available for Oregon.
+                self.assertIsNotNone(attributes["minimumWage"])
+
+            date_from_self_link = self.get_date_from_self_link(
+                    location["links"]["self"])
+            self.assertEqual(date_from_self_link, current_date)
+
+            single_location_request = self.__location_request(id)
+            single_location = single_location_request.json()
+            self.assertEqual(single_location_request.status_code, 200)
+            self.assertEqual(single_location["data"], location)
+
+    def test_state_parameter(self):
+        test_states = {'OR': 'Oregon', 'CA': 'California', 'WA': 'Washington'}
+
+        for state_code, state in test_states.items():
+            locations = self.__locations_request(state_code).json()["data"]
+            self.assertGreaterEqual(len(locations), 1)
+            for location in locations:
+                attributes = location["attributes"]
+                self.assertEqual(attributes["state"], state)
+                self.assertEqual(attributes["stateCode"], state_code)
+
+    def test_date_parameter(self):
+        bad_date_request = self.__locations_request(None, "12/31/2018")
+        self.assertEqual(bad_date_request.status_code, 400)
+
+        random_date = self.get_random_date().isoformat()
+        locations = self.__locations_request(None, random_date).json()["data"]
+
+        self.assertGreaterEqual(len(locations), self.minimal_location_count)
+
+        for location in locations:
+            self_link_date = self.get_date_from_self_link(
+                    location["links"]["self"])
+            self.assertEqual(self_link_date, random_date)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
