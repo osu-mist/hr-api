@@ -3,6 +3,7 @@ import requests
 import argparse
 import json
 import sys
+import logging
 from datetime import date, datetime
 from urllib import parse
 from random import randint
@@ -64,16 +65,22 @@ class integration_tests(unittest.TestCase):
 
     def test_departments(self):
         for bc in self.business_centers:
+            logging.debug("Testing business center: {}".format(bc))
             request = self.__departments_request(bc)
 
+            request_elapsed_seconds = request.elapsed.total_seconds()
+            logging.debug("Request took {} second(s)"
+                          .format(request_elapsed_seconds))
+
             self.assertEqual(request.status_code, 200)
-            self.assertLess(request.elapsed.total_seconds(), 1)
+            self.assertLess(request_elapsed_seconds, 1)
 
             departments = request.json()["data"]
             self.assertGreaterEqual(len(departments), 1)
 
             for department in departments:
                 id = department["id"]
+                logging.debug("Testing department ID: {}".format(id))
                 attributes = department["attributes"]
 
                 self.assertEqual(department["type"], "department")
@@ -93,20 +100,28 @@ class integration_tests(unittest.TestCase):
 
     def test_positions(self):
         for bc in self.business_centers:
+            logging.debug("Testing business center: {}".format(bc))
+
             departments = self.__departments_request(bc).json()
             department_codes = set([department["id"]
                                    for department in departments["data"]])
 
+            logging.debug("Department codes: {}".format(department_codes))
+
             request = self.__positions_request(bc, self.position_type)
+            request_elapsed_seconds = request.elapsed.total_seconds()
+            logging.debug("Request took {} second(s)"
+                          .format(request_elapsed_seconds))
 
             self.assertEqual(request.status_code, 200)
-            self.assertLess(request.elapsed.total_seconds(), 2)
+            self.assertLess(request_elapsed_seconds, 1)
 
             positions = request.json()["data"]
             self.assertGreaterEqual(len(positions), 1)
 
             for position in positions:
                 id = position["id"]
+                logging.debug("Testing position ID: {}".format(id))
                 attributes = position["attributes"]
 
                 self.assertEqual(position["type"], "position")
@@ -160,21 +175,28 @@ class integration_tests(unittest.TestCase):
                 randint(int(today.timestamp()), int(today_plus_4_years
                         .timestamp())))
 
+        logging.debug("Random date: {}".format(random_datetime))
+
         return random_datetime.date()
 
     def test_all_locations(self):
         request = self.__locations_request(None)
+        request_elapsed_seconds = request.elapsed.total_seconds()
+        logging.debug("Request took {} second(s)"
+                      .format(request_elapsed_seconds))
 
         self.assertEqual(request.status_code, 200)
-        self.assertLess(request.elapsed.total_seconds(), 1)
+        self.assertLess(request_elapsed_seconds, 1)
 
         current_date = date.today().isoformat()
+        logging.debug("Current date: {}".format(current_date))
 
         locations = request.json()["data"]
         self.assertGreaterEqual(len(locations), self.minimal_location_count)
 
         for location in locations:
             id = location["id"]
+            logging.debug("Testing location ID: {}".format(id))
             attributes = location["attributes"]
             self.assertIsNotNone(id)
             self.assertIsNotNone(attributes["name"])
@@ -182,6 +204,7 @@ class integration_tests(unittest.TestCase):
 
             if attributes["state"] == "Oregon":
                 # Minimum wage data only available for Oregon.
+                logging.debug("Location is in Oregon")
                 self.assertIsNotNone(attributes["minimumWage"])
 
             date_from_self_link = self.get_date_from_self_link(
@@ -197,9 +220,12 @@ class integration_tests(unittest.TestCase):
         test_states = {'OR': 'Oregon', 'CA': 'California', 'WA': 'Washington'}
 
         for state_code, state in test_states.items():
+            logging.debug("Testing state: {}".format(state))
+
             locations = self.__locations_request(state_code).json()["data"]
             self.assertGreaterEqual(len(locations), 1)
             for location in locations:
+                logging.debug("Testing location ID: {}".format(location["id"]))
                 attributes = location["attributes"]
                 self.assertEqual(attributes["state"], state)
                 self.assertEqual(attributes["stateCode"], state_code)
@@ -214,6 +240,7 @@ class integration_tests(unittest.TestCase):
         self.assertGreaterEqual(len(locations), self.minimal_location_count)
 
         for location in locations:
+            logging.debug("Testing location ID: {}".format(location["id"]))
             self_link_date = self.get_date_from_self_link(
                     location["links"]["self"])
             self.assertEqual(self_link_date, random_date)
@@ -229,7 +256,18 @@ if __name__ == '__main__':
             help='Path to configuration file containing API credentials',
             required=True
             )
+    parser.add_argument(
+            '--debug',
+            dest='debug',
+            help='Enable debug logging mode',
+            action='store_true'
+            )
     arguments, unittest_args = parser.parse_known_args()
+
+    if arguments.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.WARNING)
 
     # Load configuration file
     config_file = arguments.config_file
