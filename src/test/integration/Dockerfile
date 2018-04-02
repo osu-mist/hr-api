@@ -5,8 +5,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 WORKDIR /usr/src/app
 
-RUN ["chmod", "o+w", "."]
-
 USER nobody:nogroup
 
 COPY ./integration_tests.py .
