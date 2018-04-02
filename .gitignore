@@ -30,3 +30,6 @@ build.properties
 
 #contrib
 src/main/groovy/edu/oregonstate/mist/contrib
+
+# Integration Tests Configuration
+**/configuration.json
