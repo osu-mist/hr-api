@@ -41,7 +41,7 @@ class integration_tests(unittest.TestCase):
                 client_secret)
 
         # Set headers and query parameters
-        cls.auth_header = {'Authorization': 'Bearer %s' % access_token}
+        cls.auth_header = {'Authorization': 'Bearer {}'.format(access_token)}
 
     # Helper method to get an access token
     @staticmethod
@@ -59,6 +59,12 @@ class integration_tests(unittest.TestCase):
     def __make_request(self, url, params=None):
         return requests.get(url, params=params, headers=self.auth_header)
 
+    def assert_response_time(self, elapsed_seconds, max_elapsed_seconds):
+        logging.debug("Request took {} second(s)"
+                      .format(elapsed_seconds))
+        self.assertLess(elapsed_seconds, max_elapsed_seconds)
+
+
     def __departments_request(self, business_center):
         params = {'businessCenter': business_center}
         return self.__make_request(self.departments_url, params)
@@ -68,12 +74,8 @@ class integration_tests(unittest.TestCase):
             logging.debug("Testing business center: {}".format(bc))
             request = self.__departments_request(bc)
 
-            request_elapsed_seconds = request.elapsed.total_seconds()
-            logging.debug("Request took {} second(s)"
-                          .format(request_elapsed_seconds))
-
+            self.assert_response_time(request.elapsed.total_seconds(), 1)
             self.assertEqual(request.status_code, 200)
-            self.assertLess(request_elapsed_seconds, 1)
 
             departments = request.json()["data"]
             self.assertGreaterEqual(len(departments), 1)
@@ -109,12 +111,9 @@ class integration_tests(unittest.TestCase):
             logging.debug("Department codes: {}".format(department_codes))
 
             request = self.__positions_request(bc, self.position_type)
-            request_elapsed_seconds = request.elapsed.total_seconds()
-            logging.debug("Request took {} second(s)"
-                          .format(request_elapsed_seconds))
 
+            self.assert_response_time(request.elapsed.total_seconds(), 1)
             self.assertEqual(request.status_code, 200)
-            self.assertLess(request_elapsed_seconds, 1)
 
             positions = request.json()["data"]
             self.assertGreaterEqual(len(positions), 1)
@@ -151,6 +150,9 @@ class integration_tests(unittest.TestCase):
         self.assertEqual(self.__positions_request(
                          self.business_centers[0],
                          "classified").status_code, 400)
+        self.assertEqual(self.__positions_request(
+                         self.business_centers[0],
+                         None).status_code, 400)
 
     def __locations_request(self, state, date=None):
         params = {'state': state, 'date': date}
@@ -181,12 +183,9 @@ class integration_tests(unittest.TestCase):
 
     def test_all_locations(self):
         request = self.__locations_request(None)
-        request_elapsed_seconds = request.elapsed.total_seconds()
-        logging.debug("Request took {} second(s)"
-                      .format(request_elapsed_seconds))
 
+        self.assert_response_time(request.elapsed.total_seconds(), 3)
         self.assertEqual(request.status_code, 200)
-        self.assertLess(request_elapsed_seconds, 1)
 
         current_date = date.today().isoformat()
         logging.debug("Current date: {}".format(current_date))
