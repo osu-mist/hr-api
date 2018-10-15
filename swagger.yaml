@@ -14,12 +14,14 @@ schemes:
   - https
 produces:
   - application/json
+host: api.oregonstate.edu
 basePath: /v1/hr
 paths:
   /positions:
     get:
       summary: List positions
       description: List position (job) titles and numbers in a single business center and department.
+      operationId: getPositions
       parameters:
         - in: query
           name: type
@@ -46,6 +48,7 @@ paths:
     get:
       summary: List departments
       description: Return org code and org description (departments) for a single business center
+      operationId: getDepartments
       parameters:
         - $ref: '#/parameters/businessCenter'
         - $ref: '#/parameters/pretty'
@@ -67,6 +70,7 @@ paths:
     get:
       summary: List locations
       description: Return a list of HR locations that can be related to a job record, including minimum wages if applicable.
+      operationId: getLocations
       parameters:
         - in: query
           name: state
@@ -93,6 +97,7 @@ paths:
     get:
       summary: Get location by ID
       description: Return a single HR location that can be related to a job record, including minimum wages if applicable.
+      operationId: getLocationByID
       parameters:
         - in: path
           name: id
