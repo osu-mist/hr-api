@@ -77,6 +77,11 @@ paths:
           description: "Filter by state code. Use ANSI standard INCITS 38:2009 for state codes."
           required: false
           type: string
+        - in: query
+          name: name
+          description: "Filter by location name."
+          required: false
+          type: string
         - $ref: '#/parameters/date'
         - $ref: '#/parameters/pretty'
         - $ref: '#/parameters/authorization'
