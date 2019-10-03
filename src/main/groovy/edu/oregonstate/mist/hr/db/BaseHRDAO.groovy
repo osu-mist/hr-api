@@ -13,7 +13,7 @@ abstract class BaseHRDAO {
         new ArrayList<Department>()
     }
 
-    List<Location> getLocations(String state) {
+    List<Location> getLocations(String state, String name) {
         new ArrayList<Location>()
     }
 
