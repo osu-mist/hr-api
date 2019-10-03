@@ -86,7 +86,8 @@ class HRResource extends Resource {
     @GET
     @Path("locations")
     Response getLocations(@QueryParam('date') String date,
-                          @QueryParam('state') String state) {
+                          @QueryParam('state') String state,
+                          @QueryParam('name') String name) {
         LocalDate effectiveDate
 
         try {
@@ -98,7 +99,7 @@ class HRResource extends Resource {
         Location.minimumWageDate = effectiveDate
 
         ok(new ResultObject(
-                data: hrDAO.getLocations(state).collect {
+                data: hrDAO.getLocations(state, name).collect {
                     new ResourceObject(
                             id: it.id,
                             type: Location.type,

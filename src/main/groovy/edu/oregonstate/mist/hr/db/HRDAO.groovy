@@ -28,7 +28,8 @@ public interface HRDAO extends Closeable {
 
     @Mapper(LocationMapper)
     @SqlQuery(AbstractHRDAO.getLocations)
-    List<Location> getLocations(@Bind("state") String state)
+    List<Location> getLocations(@Bind("state") String state,
+                                @Bind("name") String name)
 
     @Mapper(LocationMapper)
     @SqlQuery(AbstractHRDAO.getLocationById)

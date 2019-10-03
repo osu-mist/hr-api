@@ -134,7 +134,7 @@ class HRMockDAOTest {
     @Test
     void testLocations() {
         def mockDAO = new HRMockDAO(1)
-        List<Location> locations = mockDAO.getLocations(null)
+        List<Location> locations = mockDAO.getLocations(null, null)
         assertTrue(locations.size() > 1)
 
         String locationID = locations[0].id
