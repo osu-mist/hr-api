@@ -123,7 +123,7 @@ class HRMockDAO extends BaseHRDAO implements HRDAO {
         !invalidBusinessCenters.contains(businessCenter)
     }
 
-    List<Location> getLocations(String state) {
+    List<Location> getLocations(String state, String name) {
         locations.collect { id, location -> location}
     }
 

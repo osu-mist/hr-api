@@ -134,7 +134,7 @@ class HRResourceTest {
 
     @Test
     void getLocationsShouldRejectBadDate() {
-        rejectBadDates(hrResource.getLocations("31-12-2019", null))
+        rejectBadDates(hrResource.getLocations("31-12-2019", null, null))
     }
 
     @Test
@@ -156,7 +156,7 @@ class HRResourceTest {
     @Test
     void getLocationsShouldAcceptGoodDate() {
         String goodISO8601Date = "2017-12-31"
-        Response locationsResponse = hrResource.getLocations(goodISO8601Date, null)
+        Response locationsResponse = hrResource.getLocations(goodISO8601Date, null, null)
 
         assertNotNull(locationsResponse.entity)
         assertEquals(locationsResponse.status, 200)
@@ -180,14 +180,14 @@ class HRResourceTest {
     @Test
     void testSelfLink() {
         String date = "2015-09-20"
-        Response response = hrResource.getLocations(date, null)
+        Response response = hrResource.getLocations(date, null, null)
 
         assertEquals(date, parseDateFromSelfLink(response))
     }
 
     @Test
     void defaultDateShouldBeCurrentDate() {
-        Response response = hrResource.getLocations(null, null)
+        Response response = hrResource.getLocations(null, null, null)
         String currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
 
         assertEquals(currentDate, parseDateFromSelfLink(response))
