@@ -1,8 +1,7 @@
 swagger: '2.0'
 info:
   title: HR API
-  description: |
-    API to retrieve the departments, position titles, and ID's tied to a department and business center.
+  description: Get departments, position titles, and ID's tied to a department and business center.
   version: '1.0'
   license:
     name: GNU Affero General Public License Version 3
@@ -16,6 +15,9 @@ produces:
   - application/json
 host: api.oregonstate.edu
 basePath: /v1/hr
+security:
+  - OAuth2:
+    - full
 paths:
   /positions:
     get:
