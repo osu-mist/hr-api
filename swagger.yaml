@@ -32,7 +32,6 @@ paths:
           type: string
         - $ref: '#/parameters/businessCenter'
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: List of positions
@@ -54,7 +53,6 @@ paths:
       parameters:
         - $ref: '#/parameters/businessCenter'
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: List of departments
@@ -86,7 +84,6 @@ paths:
           type: string
         - $ref: '#/parameters/date'
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: List of locations
@@ -113,7 +110,6 @@ paths:
           type: string
         - $ref: '#/parameters/date'
         - $ref: '#/parameters/pretty'
-        - $ref: '#/parameters/authorization'
       responses:
         200:
           description: Location
