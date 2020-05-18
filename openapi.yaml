@@ -39,12 +39,38 @@ paths:
           $ref: '#/components/responses/400'
         '500':
           $ref: '#/components/responses/500'
+  /hr/positions/{positionId}:
+    get:
+      summary: Get position by ID
+      tags:
+        - positions
+      description: >-
+        Return a single position (job) titles and numbers in a single business center and department.
+      operationId: getPositionById
+      parameters:
+        - name: positionId
+          in: path
+          description: Unique position ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PositionResult'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
   /hr/departments:
     get:
       summary: List departments
       tags:
         - departments
-      description: Return org code and org description (departments) for a single business center
+      description: Return departments for a single business center
       operationId: getDepartments
       parameters:
         - $ref: '#/components/parameters/businessCenter'
@@ -59,6 +85,32 @@ paths:
           $ref: '#/components/responses/400'
         '500':
           $ref: '#/components/responses/500'
+  /hr/departments/{departmentId}:
+    get:
+      summary: Get department by ID
+      tags:
+        - departments
+      description: >-
+        Return a single department for a single business center
+      operationId: getDepartmentById
+      parameters:
+        - name: departmentId
+          in: path
+          description: Unique department ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartmentResult'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
   /hr/locations:
     get:
       summary: List locations
@@ -69,9 +121,16 @@ paths:
         if applicable.
       operationId: getLocations
       parameters:
-        - $ref: '#/components/parameters/minWageDate'
-        - in: query
-          name: filter[name]
+        - name: filter[minWageDate]
+          in: query
+          description: Date to search by for minimum wage data. Minimum wage depends on the date.
+          required: false
+          schema:
+            type: string
+            format: date
+            example: '2018-12-31'
+        - name: filter[name]
+          in: query
           description: Search by location name
           required: false
           schema:
@@ -142,7 +201,6 @@ paths:
       description: Return a single HR location that can be related to a job record, including minimum wages if applicable.
       operationId: getLocationById
       parameters:
-        - $ref: '#/components/parameters/minWageDate'
         - name: locationId
           in: path
           description: Unique location ID
@@ -156,8 +214,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LocationResult'
-        '400':
-          $ref: '#/components/responses/400'
         '404':
           $ref: '#/components/responses/404'
         '500':
@@ -181,15 +237,6 @@ components:
         type: string
         example: ABCD
         pattern: ^.{4}$
-    minWageDate:
-      in: query
-      name: filter[minWageDate]
-      description: Date to search by for minimum wage data. Minimum wage depends on the date.
-      required: false
-      schema:
-        type: string
-        format: date
-        example: '2018-12-31'
   responses:
     '400':
       description: Bad request
@@ -290,6 +337,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PositionResource'
+    PositionResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          $ref: '#/components/schemas/PositionResource'
     DepartmentResource:
       properties:
         id:
@@ -329,6 +383,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DepartmentResource'
+    DepartmentResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          $ref: '#/components/schemas/DepartmentResource'
     LocationResource:
       properties:
         id:
