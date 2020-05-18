@@ -64,7 +64,9 @@ paths:
       summary: List locations
       tags:
         - locations
-      description: Return a list of HR locations that can be related to a job record, including minimum wages if applicable.
+      description: >-
+        Return a list of HR locations that can be related to a job record, including minimum wages
+        if applicable.
       operationId: getLocations
       parameters:
         - $ref: '#/components/parameters/minWageDate'
@@ -75,6 +77,18 @@ paths:
           schema:
             type: string
             example: Corvallis
+        - name: filter[city]
+          in: query
+          required: false
+          description: Filter results by city.
+          schema:
+            type: string
+        - name: filter[county]
+          in: query
+          required: false
+          description: Filter results by county.
+          schema:
+            type: string
         - name: filter[stateCode]
           in: query
           required: false
@@ -87,6 +101,28 @@ paths:
               NM, NV, OK, OR, RI, SC, SD, TN, UT, VT, WA, WI, WY, VI, TT, PR, GU, CZ, AS, BC, NT,
               AB, ON, SK, NB, NF, NS, PE, PQ, MP, FM, MH, PW, MB, YT, AP, AE, AA, FC, FR, NU, BY,
               ENG]
+        - name: filter[nationCode]
+          in: query
+          required: false
+          description: Filter results by nation code.
+          schema:
+            type: string
+            enum:
+              &nationCodeEnums [FPL, ARE, ARW, KSA, QSG, ESL, GES, CSD, KSY, HTT, ETG, JUY, JVE,
+              KYD, AZM, FAL, GAD, JAR, HBS, KBH, PBT, ABI, QBU, LCA, BCG, OTW, OCN, ICR, GDK, ISV,
+              AET, NPF, BGA, SGL, HHT, GIS, KIQ, HJM, AKE, DLS, CLY, GMC, HMQ, AMZ, NPG, ENE, MNZ,
+              JPY, HAI, HAG, EBJ, FBY, MCX, NCK, JFK, NGU, HLC, FAM, FMD, FEE, FLT, OMO, FHR, DNA,
+              JGY, GDE, HPM, QVN, QBN, CEH, RHM, HKN, NNR, NPN, BST, NTK, FMK, FSR, FTX, FTI, QMM,
+              AER, FBO, FAJ, NSB, FUA, FRU, FGE, FBA, GAT, FYU, LBM, RBV, BCF, MCC, HCU, HDO, QTP,
+              CEG, JGF, GGR, HGD, EGN, OHK, KIR, KIL, KJO, KLB, GLU, AMG, GMT, AYO, IMX, OMN, GNL,
+              NNC, ENG, OKP, PPK, JPE, KQA, FRO, ESN, ADJ, DZA, HVC, KOM, JSR, ATZ, CTN, NTV, GGB,
+              NVU, NWF, FBG, QID, GIT, GPT, AZW, FSK, BCM, DBW, EGW, EML, FHU, FKZ, GCH, GLI, GSM,
+              HBB, HVG, IGT, KAE, KKW, NFJ, QKH, QPH, NUM, KGZ, FKK, HBL, COD, ASO, PLK, GSE, DSZ,
+              QTH, KTR, GVA, NWS, BZR, PAF, CDZ, BAO, MAU, PBD, GBE, IBZ, JBO, JBR, PIO, BTD, JCL,
+              JCO, ECV, KCY, JEC, BGQ, GFI, GFR, EGM, HGP, IHN, GIE, ECI, OJP, OKR, ELR, AMW, CMA,
+              AMU, QMY, PNP, INI, GNO, IPA, LUS, RAQ, HAW, EBF, HKY, AKM, HDM, GFO, RTF, FKG, FUZ,
+              FLV, PMV, FSI, HAN, EGH, PIN, EMR, AUG, KYE, NTO, GGI, NKI, HMS, NNU, ASC, HTC, FEZ,
+              FMW, NNF, QLA, IAN, KWE, FTM, HMF, FKV]
       responses:
         '200':
           description: Successful response
@@ -314,37 +350,39 @@ components:
             city:
               type: string
               description: City of location
-              nullable: false
+              nullable: true
               example: Corvallis
             county:
               type: string
               description: Country of location
-              nullable: false
+              nullable: true
               example: Benton County
-            state:
-              type: string
-              description: State of location
-              nullable: false
-              example: Oregon
             stateCode:
               type: string
-              nullable: false
+              nullable: true
               enum: *stateCodeEnums
               description: State code/abbreviation. This could also represent a province.
               example: OR
+            nationCode:
+              type: string
+              nullable: true
+              enum: *nationCodeEnums
+              description: Code for the nation
             minimumWage:
               type: object
               properties:
                 classification:
                   type: string
-                  description: Classification of location related to minimum wage. This classification affects the value of minimum wage for a given date.
+                  description: >-
+                    Classification of location related to minimum wage. This classification affects
+                    the value of minimum wage for a given date.
                   enum: [Standard, Nonurban, Urban]
                 amount:
                   type: number
                   format: float
                   description: >-
-                    Minimum wage for location. Currently, minimum wage is only available for Oregon locations.
-                    This value can be affected by the date query parameter.
+                    Minimum wage for location. Currently, minimum wage is only available for Oregon
+                    locations. This value can be affected by the date query parameter.
                   example: 10.25
                 date:
                   type: string
