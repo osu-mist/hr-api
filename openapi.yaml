@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: Express API Skeleton
-  description: Skeleton for Express APIs
+  title: HR API
+  description: Get departments, position titles, and ID's tied to a department and business center.
   version: v2
   license:
     name: GNU Affero General Public License Version 3
@@ -12,49 +12,22 @@ info:
     email: isdataarchitecture@oregonstate.edu
 externalDocs:
   description: GitHub Repository
-  url: https://github.com/osu-mist/express-api-skeleton
+  url: https://github.com/osu-mist/hr-api
 servers:
   - url: https://api.oregonstate.edu/v2
 security:
   - OAuth2:
       - full
 paths:
-  /pets:
+  /hr/positions:
     get:
-      summary: List all pets
+      summary: List positions
       tags:
-        - pets
-      description: Get all pets
-      operationId: getPets
+        - positions
+      description: List position (job) titles and numbers in a single business center and department.
+      operationId: getPositions
       parameters:
-        - $ref: '#/components/parameters/pageNumber'
-        - $ref: '#/components/parameters/pageSize'
-        - in: query
-          name: filter[species]
-          description: Search by pet species
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: filter[hasOwner]
-          description: Filter results if pet has an owner or not
-          required: false
-          schema:
-            type: boolean
-        - in: query
-          name: filter[age][gt]
-          description: Filter results by age
-          required: false
-          schema:
-            type: number
-            format: integer
-        - in: query
-          name: filter[age][lt]
-          description: Filter results by age
-          required: false
-          schema:
-            type: number
-            format: integer
+        - $ref: '#/components/parameters/businessCenter'
       responses:
         '200':
           description: Successful response
@@ -66,45 +39,15 @@ paths:
           $ref: '#/components/responses/400'
         '500':
           $ref: '#/components/responses/500'
-    post:
-      summary: Add a new pet
-      tags:
-        - pets
-      operationId: postPet
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PetPostBody'
-      responses:
-        '201':
-          description: Pet successfully created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PetResult'
-        '400':
-          $ref: '#/components/responses/400'
-        '409':
-          $ref: '#/components/responses/409'
-        '500':
-          $ref: '#/components/responses/500'
-  /pets/{id}:
+  /hr/departments:
     get:
-      summary: Info for a specific pet
+      summary: List departments
       tags:
-        - pets
-      description: Get pet by unique ID
-      operationId: getPetById
+        - departments
+      description: Return org code and org description (departments) for a single business center
+      operationId: getDepartments
       parameters:
-        - name: id
-          in: path
-          description: Unique Pet ID
-          required: true
-          schema:
-            type: string
-            pattern: '^[A-Za-z0-9-]+$'
+        - $ref: '#/components/parameters/businessCenter'
       responses:
         '200':
           description: Successful response
@@ -112,6 +55,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PetResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+  /hr/locations:
+    get:
+      summary: List locations
+      tags:
+        - locations
+      description: Return a list of HR locations that can be related to a job record, including minimum wages if applicable.
+      operationId: getLocations
+      parameters:
+        - in: query
+          name: filter[name]
+          description: Search by location name
+          required: false
+          schema:
+            type: string
+            example: Corvallis
+        - $ref: '#/components/parameters/minWageDate'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetResult'
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+  /hr/locations/{locationId}:
+    get:
+      summary: Get location by ID
+      tags:
+        - locations
+      description: Return a single HR location that can be related to a job record, including minimum wages if applicable.
+      operationId: getLocationById
+      parameters:
+        - $ref: '#/components/parameters/minWageDate'
+        - name: locationId
+          in: path
+          description: Unique location ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetResult'
+        '400':
+          $ref: '#/components/responses/400'
         '404':
           $ref: '#/components/responses/404'
         '500':
@@ -126,25 +124,24 @@ components:
           scopes:
             full: Full access to the API
   parameters:
-    pageNumber:
-      name: page[number]
+    businessCenter:
       in: query
-      required: false
-      description: Page number of results
+      name: filter[businessCenter]
+      description: Search by 4-character business center name
+      required: true
       schema:
-        type: integer
-        minimum: 1
-        default: 1
-    pageSize:
-      name: page[size]
+        type: string
+        example: ABCD
+        pattern: ^.{4}$
+    minWageDate:
       in: query
+      name: filter[minWageDate]
+      description: Date to search by for minimum wage data. Minimum wage depends on the date.
       required: false
-      description: Number of results to return
       schema:
-        type: integer
-        minimum: 1
-        maximum: 500
-        default: 25
+        type: string
+        format: date
+        example: '2018-12-31'
   responses:
     '400':
       description: Bad request
