@@ -24,7 +24,7 @@ paths:
       summary: List positions
       tags:
         - positions
-      description: List position (job) titles and numbers in a single business center and department.
+      description: List position (job) titles and numbers in a single business center.
       operationId: getPositions
       parameters:
         - $ref: '#/components/parameters/businessCenter'
@@ -44,8 +44,7 @@ paths:
       summary: Get position by ID
       tags:
         - positions
-      description: >-
-        Return a single position (job) titles and numbers in a single business center and department.
+      description: Return a single position (job) titles and numbers.
       operationId: getPositionById
       parameters:
         - name: positionId
@@ -90,8 +89,7 @@ paths:
       summary: Get department by ID
       tags:
         - departments
-      description: >-
-        Return a single department for a single business center
+      description: Return a single department.
       operationId: getDepartmentById
       parameters:
         - name: departmentId
