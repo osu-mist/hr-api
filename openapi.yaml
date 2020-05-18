@@ -34,7 +34,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PetSetResult'
+                $ref: '#/components/schemas/PositionSetResult'
         '400':
           $ref: '#/components/responses/400'
         '500':
@@ -54,7 +54,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PetResult'
+                $ref: '#/components/schemas/DepartmentSetResult'
         '400':
           $ref: '#/components/responses/400'
         '500':
@@ -67,6 +67,7 @@ paths:
       description: Return a list of HR locations that can be related to a job record, including minimum wages if applicable.
       operationId: getLocations
       parameters:
+        - $ref: '#/components/parameters/minWageDate'
         - in: query
           name: filter[name]
           description: Search by location name
@@ -74,14 +75,25 @@ paths:
           schema:
             type: string
             example: Corvallis
-        - $ref: '#/components/parameters/minWageDate'
+        - name: filter[stateCode]
+          in: query
+          required: false
+          description: Filter results by state code.
+          schema:
+            type: string
+            enum:
+              &stateCodeEnums [DE, NJ, PA, DC, NY, CA, VA, NC, TX, FL, HI, WV, MT, GA, MD, OH, IN,
+              AK, AL, AR, AZ, CO, CT, IA, ID, IL, KS, KY, LA, MA, ME, MI, MN, MO, MS, ND, NE, NH,
+              NM, NV, OK, OR, RI, SC, SD, TN, UT, VT, WA, WI, WY, VI, TT, PR, GU, CZ, AS, BC, NT,
+              AB, ON, SK, NB, NF, NS, PE, PQ, MP, FM, MH, PW, MB, YT, AP, AE, AA, FC, FR, NU, BY,
+              ENG]
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PetResult'
+                $ref: '#/components/schemas/LocationSetResult'
         '400':
           $ref: '#/components/responses/400'
         '500':
@@ -107,7 +119,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PetResult'
+                $ref: '#/components/schemas/LocationResult'
         '400':
           $ref: '#/components/responses/400'
         '404':
@@ -155,12 +167,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResult'
-    '409':
-      description: Conflict
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResult'
     '500':
       description: Internal server error
       content:
@@ -168,149 +174,198 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResult'
   schemas:
-    Meta:
-      properties:
-        totalResults:
-          type: integer
-          description: Total number of results
-          example: 10
-        totalPages:
-          type: integer
-          description: Total number of pages
-          example: 10
-        currentPageNumber:
-          type: integer
-          description: Page number of the returned results
-          example: 1
-        currentPageSize:
-          type: integer
-          description: Number of results per page
-          example: 25
     SelfLink:
       properties:
         self:
           type: string
           format: uri
           description: Self-link of current resource
-    PaginationLinks:
-      properties:
-        first:
-          type: string
-          format: uri
-          description: The first page of data
-        last:
-          type: string
-          format: uri
-          description: The last page of data
-        prev:
-          type: string
-          format: uri
-          nullable: true
-          description: The previous page of data
-        next:
-          type: string
-          format: uri
-          nullable: true
-          description: The next page of data
-    PetResource:
+    PositionResource:
       properties:
         id:
           type: string
-          description: A unique ID of pet
+          description: A unique ID of position
+          example: C12345
         type:
           type: string
-          enum:
-            - pet
+          enum: [position]
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        attributes:
+          properties:
+            title:
+              type: string
+              description: Position title
+              example: Grad Appt Summer Break
+            class:
+              type: string
+              description: Position class
+              example: Student Project Assistant
+            businessCenter:
+              type: string
+              description: Name of the business center
+              example: FOBC
+            organization:
+              type: object
+              properties:
+                code:
+                  type: string
+                  nullable: false
+                  description: Organization code for the department
+                  example: '230600'
+                title:
+                  type: string
+                  nullable: false
+                  description: Organization title for the department
+                  example: FOR - Forestry Administration
+            salaryPoints:
+              type: object
+              properties:
+                low:
+                  type: number
+                  format: float
+                  description: Low point for position salary
+                  example: 10.5
+                  nullable: false
+                high:
+                  type: number
+                  format: float
+                  description: High point for position salary
+                  example: 15.25
+                  nullable: false
+            nationalOccupation:
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: National occupation code
+                  example: '1234'
+                  nullable: false
+                description:
+                  type: string
+                  description: Description of national occupation code
+                  example: Colleges/Schools Professionals
+                  nullable: false
+    PositionSetResult:
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PositionResource'
+    DepartmentResource:
+      properties:
+        id:
+          type: string
+          description: A unique ID of position
+          example: '230600'
+        type:
+          type: string
+          enum: [department]
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        attributes:
+          properties:
+            organization:
+              type: object
+              properties:
+                code:
+                  type: string
+                  nullable: false
+                  description: Organization code for the department
+                  example: '230600'
+                title:
+                  type: string
+                  nullable: false
+                  description: Organization title for the department
+                  example: FOR - Forestry Administration
+            businessCenter:
+              type: string
+              description: Name of the business center
+              example: FOBC
+              nullable: false
+    DepartmentSetResult:
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DepartmentResource'
+    LocationResource:
+      properties:
+        id:
+          type: string
+          description: A unique ID of location
+          example: '47'
+        type:
+          type: string
+          enum: [location]
         links:
           $ref: '#/components/schemas/SelfLink'
         attributes:
           properties:
             name:
               type: string
-              description: Name of pet
-              example: Hedwig
-            owner:
+              description: Name of location
+              nullable: false
+              example: Corvallis
+            city:
               type: string
-              description: Name of owner
-              example: Harry Potter
-            species:
+              description: City of location
+              nullable: false
+              example: Corvallis
+            county:
               type: string
-              description: Species of pet
-              example: Owl
-            age:
-              type: number
-              format: integer
-              description: Age of pet
-              example: 5
-            size:
+              description: Country of location
+              nullable: false
+              example: Benton County
+            state:
+              type: string
+              description: State of location
+              nullable: false
+              example: Oregon
+            stateCode:
+              type: string
+              nullable: false
+              enum: *stateCodeEnums
+              description: State code/abbreviation. This could also represent a province.
+              example: OR
+            minimumWage:
               type: object
               properties:
-                length:
+                classification:
+                  type: string
+                  description: Classification of location related to minimum wage. This classification affects the value of minimum wage for a given date.
+                  enum: [Standard, Nonurban, Urban]
+                amount:
                   type: number
                   format: float
-                  description: Length in inches
-                  example: 18
-                chest:
-                  type: number
-                  format: float
-                  description: Chest size in inches
-                  example: 16
-                weight:
-                  type: number
-                  format: float
-                  description: Weight in pounds
-                  example: 8
-    PetPostBody:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            type:
-              $ref: '#/components/schemas/PetResource/properties/type'
-            attributes:
-              type: object
-              properties:
-                name:
-                  $ref: '#/components/schemas/PetResource/properties/attributes/properties/name'
-                owner:
-                  $ref: '#/components/schemas/PetResource/properties/attributes/properties/owner'
-                species:
-                  $ref: '#/components/schemas/PetResource/properties/attributes/properties/species'
-                age:
-                  $ref: '#/components/schemas/PetResource/properties/attributes/properties/age'
-                size:
-                  $ref: '#/components/schemas/PetResource/properties/attributes/properties/size'
-              required:
-                - name
-                - owner
-                - species
-              additionalProperties: false
-          required:
-            - type
-            - attributes
-          additionalProperties: false
-      required:
-       - data
-      additionalProperties: false
-    PetResult:
+                  description: >-
+                    Minimum wage for location. Currently, minimum wage is only available for Oregon locations.
+                    This value can be affected by the date query parameter.
+                  example: 10.25
+                date:
+                  type: string
+                  format: date
+                  description: Date used to determine minimum wage.
+                  example: '2018-12-31'
+    LocationSetResult:
       properties:
         links:
           $ref: '#/components/schemas/SelfLink'
         data:
-          $ref: '#/components/schemas/PetResource'
-    PetSetResult:
-      properties:
-        links:
-          allOf:
-            - $ref: '#/components/schemas/SelfLink'
-            - $ref: '#/components/schemas/PaginationLinks'
-        meta:
-          $ref: '#/components/schemas/Meta'
-        data:
           type: array
           items:
-            $ref: '#/components/schemas/PetResource'
+            $ref: '#/components/schemas/LocationResource'
+    LocationResult:
+      type: object
+      properties:
+        links:
+          $ref: '#/components/schemas/SelfLink'
+        data:
+          $ref: '#/components/schemas/LocationResource'
     ErrorObject:
       properties:
         status:
