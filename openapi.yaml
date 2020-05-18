@@ -278,14 +278,17 @@ components:
               type: string
               description: Position title
               example: Grad Appt Summer Break
+              nullable: false
             class:
               type: string
               description: Position class
               example: Student Project Assistant
+              nullable: false
             businessCenter:
               type: string
               description: Name of the business center
               example: FOBC
+              nullable: false
             organization:
               type: object
               properties:
@@ -436,6 +439,7 @@ components:
                     Classification of location related to minimum wage. This classification affects
                     the value of minimum wage for a given date.
                   enum: [Standard, Nonurban, Urban]
+                  nullable: true
                 amount:
                   type: number
                   format: float
@@ -443,11 +447,13 @@ components:
                     Minimum wage for location. Currently, minimum wage is only available for Oregon
                     locations. This value can be affected by the date query parameter.
                   example: 10.25
+                  nullable: true
                 date:
                   type: string
                   format: date
                   description: Date used to determine minimum wage.
                   example: '2018-12-31'
+                  nullable: true
     LocationSetResult:
       properties:
         links:
