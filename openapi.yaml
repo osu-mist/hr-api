@@ -119,7 +119,7 @@ paths:
         if applicable.
       operationId: getLocations
       parameters:
-        - name: filter[minWageDate]
+        - name: filter[minimumWageDate]
           in: query
           description: Date to search by for minimum wage data. Minimum wage depends on the date.
           required: false
