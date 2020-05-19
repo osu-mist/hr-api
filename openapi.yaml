@@ -140,12 +140,14 @@ paths:
           description: Filter results by city.
           schema:
             type: string
+            example: Corvallis
         - name: filter[county]
           in: query
           required: false
           description: Filter results by county.
           schema:
             type: string
+            example: Benton County
         - name: filter[stateCode]
           in: query
           required: false
@@ -234,7 +236,7 @@ components:
       schema:
         type: string
         example: ABCD
-        pattern: ^.{4}$
+        pattern: ^[a-zA-Z0-9]{4}$
   responses:
     '400':
       description: Bad request
@@ -262,6 +264,7 @@ components:
           format: uri
           description: Self-link of current resource
     PositionResource:
+      type: object
       properties:
         id:
           type: string
@@ -297,10 +300,10 @@ components:
                   nullable: false
                   description: Organization code for the department
                   example: '230600'
-                title:
+                description:
                   type: string
                   nullable: false
-                  description: Organization title for the department
+                  description: Organization description for the department
                   example: FOR - Forestry Administration
             salaryPoints:
               type: object
@@ -331,6 +334,7 @@ components:
                   example: Colleges/Schools Professionals
                   nullable: false
     PositionSetResult:
+      type: object
       properties:
         links:
           $ref: '#/components/schemas/SelfLink'
@@ -346,6 +350,7 @@ components:
         data:
           $ref: '#/components/schemas/PositionResource'
     DepartmentResource:
+      type: object
       properties:
         id:
           type: string
@@ -377,6 +382,7 @@ components:
               example: FOBC
               nullable: false
     DepartmentSetResult:
+      type: object
       properties:
         links:
           $ref: '#/components/schemas/SelfLink'
@@ -392,6 +398,7 @@ components:
         data:
           $ref: '#/components/schemas/DepartmentResource'
     LocationResource:
+      type: object
       properties:
         id:
           type: string
@@ -455,6 +462,7 @@ components:
                   example: '2018-12-31'
                   nullable: true
     LocationSetResult:
+      type: object
       properties:
         links:
           $ref: '#/components/schemas/SelfLink'
