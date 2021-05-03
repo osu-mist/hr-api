@@ -74,7 +74,7 @@ class integration_tests(unittest.TestCase):
             logging.debug("Testing business center: {}".format(bc))
             request = self.__departments_request(bc)
 
-            self.assert_response_time(request.elapsed.total_seconds(), 1)
+            self.assert_response_time(request.elapsed.total_seconds(), 4)
             self.assertEqual(request.status_code, 200)
 
             departments = request.json()["data"]
@@ -112,7 +112,7 @@ class integration_tests(unittest.TestCase):
 
             request = self.__positions_request(bc, self.position_type)
 
-            self.assert_response_time(request.elapsed.total_seconds(), 1)
+            self.assert_response_time(request.elapsed.total_seconds(), 4)
             self.assertEqual(request.status_code, 200)
 
             positions = request.json()["data"]
